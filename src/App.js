@@ -82,11 +82,12 @@ class App extends Component {
    * Set the search result in the state
    */
   setSearchResult() {
-    this.setState({ searchResult: this.searchKeyword() });
+    this.setState({ searchResult: this.searchKeyword(), favList: [] });
   }
 
   /**
-   * 
+   * Add the selected list to the favourites
+   * @param {*} selectedList 
    */
   addToFavList(selectedList) {
     let newList = [];
@@ -104,6 +105,10 @@ class App extends Component {
     });
   }
 
+  /**
+   * Remove the selected list from the favourites
+   * @param {*} selectedList 
+   */
   removeFromFavList(selectedList) {
     let newList = this.state.favList.filter(list => list !== selectedList);
 
