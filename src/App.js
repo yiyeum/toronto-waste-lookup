@@ -1,13 +1,13 @@
 import React, { Component } from 'react';
 import Axios from 'axios';
 import { library } from '@fortawesome/fontawesome-svg-core';
-import { faSearch } from '@fortawesome/free-solid-svg-icons';
+import { faSearch, faStar } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import Header from './components/Header';
 import WasteList from './components/WasteList';
 const LOOKUP_API_URL = 'https://secure.toronto.ca/cc_sr_v1/data/swm_waste_wizard_APR?limit=1000/';
 
-library.add(faSearch)
+library.add(faSearch, faStar)
 
 class App extends Component {
   constructor(props) {
@@ -15,14 +15,21 @@ class App extends Component {
     this.state = {
       lookupData: [],
       searchInput: "",
-      searchResult: []
+      searchResult: [],
+      favList: []
     }
 
     this.searchChange = this.searchChange.bind(this);
     this.searchKeyword = this.searchKeyword.bind(this);
     this.setSearchResult = this.setSearchResult.bind(this);
+    this.addToFavList = this.addToFavList.bind(this);
+    this.removeFromFavList = this.removeFromFavList.bind(this);
   }
 
+  /**
+   * Get the lookup data using Axios and store in the state
+   * when the component mounts
+   */
   async componentWillMount() {
     try {
       const resp = await Axios.get(LOOKUP_API_URL);
@@ -78,6 +85,36 @@ class App extends Component {
     this.setState({ searchResult: this.searchKeyword() });
   }
 
+  /**
+   * 
+   */
+  addToFavList(selectedList) {
+    let newList = [];
+    if(!(this.state.favList.includes(selectedList))){
+      newList = [...this.state.favList, selectedList];
+    } else {
+      newList = [...this.state.favList];
+    }
+    
+    this.setState((prevState) => {
+      return {
+        ...prevState,
+        favList: newList
+      }
+    });
+  }
+
+  removeFromFavList(selectedList) {
+    let newList = this.state.favList.filter(list => list !== selectedList);
+
+    this.setState((prevState) => {
+      return {
+        ...prevState,
+        favList: newList
+      }
+    });
+  }
+
   render() {
     return (
       <div className="App">
@@ -101,11 +138,27 @@ class App extends Component {
           </div>
           {/* End of Search Section */}
 
-          {/* {
+          {
             this.state.searchResult.map((list, index) =>
-              <div key={index}>{list.title}</div>
+              <div key={index} className="row waste-list">
+                <div className="col-1"><FontAwesomeIcon icon="star" className={this.state.favList.includes(list) ? 'waste-list-fav-icon-filled' : 'waste-list-fav-icon'} onClick={this.state.favList.includes(list) ? () => (this.removeFromFavList(list)) : (() => this.addToFavList(list))} /></div>
+                <div className="col-5 waste-list-title">{list.title}</div>
+                <div className="col-6 waste-list-desc">{list.body}</div>
+              </div>
             )
-          } */}
+          }
+
+          <h3>Favourites</h3>
+
+          {
+            this.state.favList.map((list, index) =>
+              <div key={index} className="row waste-list">
+                <div className="col-1"><FontAwesomeIcon icon="star" className="waste-list-fav-icon-filled" onClick={() => this.removeFromFavList(list)} /></div>
+                <div className="col-5 waste-list-title">{list.title}</div>
+                <div className="col-6 waste-list-desc">{list.body}</div>
+              </div>
+            )
+          }
           <WasteList />
         </div>
       </div>

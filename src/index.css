@@ -63,3 +63,12 @@ table {
   line-height: 1.8;
   border-radius: 4px;
 }
+
+/* Waste List Component */
+.waste-list-fav-icon {
+	color: #AAAAAA;
+}
+
+.waste-list-fav-icon-filled {
+	color: #23995C;
+}
