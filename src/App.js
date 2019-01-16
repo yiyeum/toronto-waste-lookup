@@ -53,30 +53,32 @@ class App extends Component {
     });
   }
 
+
   /**
    * Search keyword from the lookup data and return the filtered array
    */
   searchKeyword() {
-    const query = this.state.searchInput.split(' ');
-    return (query.map(q => {
-      return this.state.lookupData.filter(data => data.keywords.includes(q));
-    }));
+    if (this.state.searchInput.length > 0) {
+      const query = this.state.searchInput.split(' ');
+      const result = [];
+      let index = 0;
+      for (index = 0; index < query.length; index++) {
+        result.push(...this.state.lookupData.filter(data => data.keywords.includes(query[index])));
+      }
+      return result;
+    } else {
+      return [];
+    }
   }
 
+  /**
+   * Set the search result in the state
+   */
   setSearchResult() {
-    let filteredData = [];
-    filteredData = this.searchKeyword();
-
-    this.setState((prevState) => {
-      return {
-        ...prevState,
-        searchResult: filteredData
-      }
-    });
+    this.setState({ searchResult: this.searchKeyword() });
   }
 
   render() {
-    console.log(this.state, " this is the state");
     return (
       <div className="App">
         <div className="container-fluid">
@@ -99,6 +101,11 @@ class App extends Component {
           </div>
           {/* End of Search Section */}
 
+          {/* {
+            this.state.searchResult.map((list, index) =>
+              <div key={index}>{list.title}</div>
+            )
+          } */}
           <WasteList />
         </div>
       </div>
