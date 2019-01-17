@@ -142,29 +142,12 @@ class App extends Component {
             {/* col for search button */}
           </div>
           {/* End of Search Section */}
-
-          {
-            this.state.searchResult.map((list, index) =>
-              <div key={index} className="row waste-list">
-                <div className="col-1"><FontAwesomeIcon icon="star" className={this.state.favList.includes(list) ? 'waste-list-fav-icon-filled' : 'waste-list-fav-icon'} onClick={this.state.favList.includes(list) ? () => (this.removeFromFavList(list)) : (() => this.addToFavList(list))} /></div>
-                <div className="col-5 waste-list-title">{list.title}</div>
-                <div className="col-6 waste-list-desc">{list.body}</div>
-              </div>
-            )
-          }
+         
+          <WasteList items={this.state.searchResult} favList={this.state.favList} removeFromFavList={this.removeFromFavList} addToFavList={this.addToFavList} />
 
           <h3>Favourites</h3>
 
-          {
-            this.state.favList.map((list, index) =>
-              <div key={index} className="row waste-list">
-                <div className="col-1"><FontAwesomeIcon icon="star" className="waste-list-fav-icon-filled" onClick={() => this.removeFromFavList(list)} /></div>
-                <div className="col-5 waste-list-title">{list.title}</div>
-                <div className="col-6 waste-list-desc">{list.body}</div>
-              </div>
-            )
-          }
-          <WasteList />
+          <WasteList  items={this.state.favList} favList={this.state.favList} removeFromFavList={this.removeFromFavList} addToFavList={this.addToFavList} />
         </div>
       </div>
     );
