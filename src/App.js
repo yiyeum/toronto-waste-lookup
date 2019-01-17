@@ -3,7 +3,6 @@ import Axios from 'axios';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faSearch, faStar } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import Header from './components/Header';
 import WasteList from './components/WasteList';
 const LOOKUP_API_URL = 'https://secure.toronto.ca/cc_sr_v1/data/swm_waste_wizard_APR?limit=1000/';
 
@@ -91,12 +90,12 @@ class App extends Component {
    */
   addToFavList(selectedList) {
     let newList = [];
-    if(!(this.state.favList.includes(selectedList))){
+    if (!(this.state.favList.includes(selectedList))) {
       newList = [...this.state.favList, selectedList];
     } else {
       newList = [...this.state.favList];
     }
-    
+
     this.setState((prevState) => {
       return {
         ...prevState,
@@ -124,10 +123,12 @@ class App extends Component {
     return (
       <div className="App">
         <div className="container-fluid">
-          <Header />
-
+          <div className="row main-header mb-3">
+            <h1>Toronto Waste Lookup</h1>
+          </div>
+          {/* .main-header */}
           {/* Search Section */}
-          <div className="row justify-content-center">
+          <div className="row justify-content-center mb-5">
             <div className="input-group col-10 col-sm-10 col-md-10 col-lg-10 col-xl-10">
               <input type="text" className="form-control search-input" onChange={this.searchChange} value={this.state.searchInput} placeholder="Search Keyword" aria-label="Waste lookup search keyword" />
             </div>
@@ -142,12 +143,16 @@ class App extends Component {
             {/* col for search button */}
           </div>
           {/* End of Search Section */}
-         
+
           <WasteList items={this.state.searchResult} favList={this.state.favList} removeFromFavList={this.removeFromFavList} addToFavList={this.addToFavList} />
 
-          <h3>Favourites</h3>
+          {
+            this.state.favList.length > 0
+            &&
+            <h3 className="title-fav">Favourites</h3>
+          }
 
-          <WasteList  items={this.state.favList} favList={this.state.favList} removeFromFavList={this.removeFromFavList} addToFavList={this.addToFavList} />
+          <WasteList items={this.state.favList} favList={this.state.favList} removeFromFavList={this.removeFromFavList} addToFavList={this.addToFavList} />
         </div>
       </div>
     );
