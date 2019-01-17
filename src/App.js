@@ -23,6 +23,7 @@ class App extends Component {
     this.setSearchResult = this.setSearchResult.bind(this);
     this.addToFavList = this.addToFavList.bind(this);
     this.removeFromFavList = this.removeFromFavList.bind(this);
+    this.searchByEnter = this.searchByEnter.bind(this);
   }
 
   /**
@@ -30,6 +31,8 @@ class App extends Component {
    * when the component mounts
    */
   async componentWillMount() {
+    window.addEventListener('keypress', this.searchByEnter);
+
     try {
       const resp = await Axios.get(LOOKUP_API_URL);
       const data = resp.data;
@@ -42,6 +45,10 @@ class App extends Component {
     } catch (err) {
       console.log("Get Lookup data failed");
     }
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('keypress', this.searchByEnter);
   }
 
   /**
@@ -119,6 +126,12 @@ class App extends Component {
     });
   }
 
+  searchByEnter(e) {
+    if (e.charCode === 13) {
+      this.setSearchResult();
+    }
+  }
+
   render() {
     return (
       <div className="App">
@@ -135,7 +148,7 @@ class App extends Component {
             {/* col for search input */}
 
             <div className="col-1 col-sm-1 col-md-1 col-lg-1 col-xl-1">
-              <div className="search-button" onClick={this.setSearchResult}>
+              <div tabIndex="0" className="search-button" onClick={this.setSearchResult} onKeyPress={this.searchByEnter}>
                 <FontAwesomeIcon icon="search" className="fa-flip-horizontal" />
               </div>
               {/* .search-button */}
@@ -149,7 +162,7 @@ class App extends Component {
           {
             this.state.favList.length > 0
             &&
-            <h3 className="title-fav">Favourites</h3>
+            <h3 className="title-fav mt-5">Favourites</h3>
           }
 
           <WasteList items={this.state.favList} favList={this.state.favList} removeFromFavList={this.removeFromFavList} addToFavList={this.addToFavList} />
