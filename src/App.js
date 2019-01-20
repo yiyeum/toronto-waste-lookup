@@ -157,16 +157,21 @@ class App extends Component {
           </div>
           {/* End of Search Section */}
 
-          <WasteList items={this.state.searchResult} favList={this.state.favList} removeFromFavList={this.removeFromFavList} addToFavList={this.addToFavList} />
 
-          {
-            this.state.favList.length > 0
-            &&
-            <h3 className="title-fav mt-5">Favourites</h3>
-          }
+          <div className="waste-list-wrapper">
+            <WasteList items={this.state.searchResult} favList={this.state.favList} removeFromFavList={this.removeFromFavList} addToFavList={this.addToFavList} />
+            <p className="waste-list-result-number">{`${this.state.searchResult.length > 0 ? this.state.searchResult.length + ' results' : this.state.searchResult.length + ' result'} found`} </p>
 
-          <WasteList items={this.state.favList} favList={this.state.favList} removeFromFavList={this.removeFromFavList} addToFavList={this.addToFavList} />
+            {
+              this.state.favList.length > 0
+              &&
+              <h3 className="title-fav mt-5">Favourites</h3>
+            }
+            <WasteList items={this.state.favList} favList={this.state.favList} removeFromFavList={this.removeFromFavList} addToFavList={this.addToFavList} />
+          </div>
+          {/* .waste-list-wrapper */}
         </div>
+        {/* .container-fluid */}
       </div>
     );
   }
