@@ -2,8 +2,9 @@ import React, { Component } from 'react';
 import Axios from 'axios';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faSearch, faStar } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import WasteList from './components/WasteList';
+import Header from './components/Header';
+import Search from './components/Search';
 const LOOKUP_API_URL = 'https://secure.toronto.ca/cc_sr_v1/data/swm_waste_wizard_APR?limit=1000/';
 
 library.add(faSearch, faStar)
@@ -15,7 +16,8 @@ class App extends Component {
       lookupData: [],
       searchInput: "",
       searchResult: [],
-      favList: []
+      favList: [],
+      resultMessage: ""
     }
 
     this.searchChange = this.searchChange.bind(this);
@@ -24,13 +26,14 @@ class App extends Component {
     this.addToFavList = this.addToFavList.bind(this);
     this.removeFromFavList = this.removeFromFavList.bind(this);
     this.searchByEnter = this.searchByEnter.bind(this);
+    this.setResultMessage = this.setResultMessage.bind(this);
   }
 
   /**
    * Get the lookup data using Axios and store in the state
    * when the component mounts
    */
-  async componentWillMount() {
+  async componentDidMount() {
     window.addEventListener('keypress', this.searchByEnter);
 
     try {
@@ -43,7 +46,13 @@ class App extends Component {
         }
       });
     } catch (err) {
-      console.log("Get Lookup data failed");
+      console.log("Get Lookup data failed", err);
+    }
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState.searchInput !== this.state.searchInput && this.state.searchInput.length === 0) {
+      this.setState({ searchResult: [], resultMessage: '' });
     }
   }
 
@@ -72,12 +81,11 @@ class App extends Component {
    */
   searchKeyword() {
     if (this.state.searchInput.length > 0) {
-      const query = this.state.searchInput.split(' ');
+      const query = this.state.searchInput.toLowerCase().split(' ');
       const result = [];
-      let index = 0;
-      for (index = 0; index < query.length; index++) {
-        result.push(...this.state.lookupData.filter(data => data.keywords.includes(query[index])));
-      }
+
+      query.forEach(q => result.push(...this.state.lookupData.filter(data => data.keywords.includes(q))));
+
       return result;
     } else {
       return [];
@@ -88,7 +96,7 @@ class App extends Component {
    * Set the search result in the state
    */
   setSearchResult() {
-    this.setState({ searchResult: this.searchKeyword(), favList: [] });
+    this.setState({ searchResult: this.searchKeyword() }, this.setResultMessage);
   }
 
   /**
@@ -126,9 +134,24 @@ class App extends Component {
     });
   }
 
+  /**
+   * Search button triggered by enter key
+   * @param {*} e 
+   */
   searchByEnter(e) {
     if (e.charCode === 13) {
       this.setSearchResult();
+    }
+  }
+
+  /**
+   * Set result message with the number of result 
+   */
+  setResultMessage() {
+    if (this.state.searchResult.length > 1) {
+      this.setState({ resultMessage: `${this.state.searchResult.length} results found` })
+    } else {
+      this.setState({ resultMessage: `${this.state.searchResult.length} result found` })
     }
   }
 
@@ -136,42 +159,38 @@ class App extends Component {
     return (
       <div className="App">
         <div className="container-fluid">
-          <div className="row main-header mb-3">
-            <h1>Toronto Waste Lookup</h1>
-          </div>
-          {/* .main-header */}
-          {/* Search Section */}
-          <div className="row justify-content-center mb-5">
-            <div className="input-group col-10 col-sm-10 col-md-10 col-lg-10 col-xl-10">
-              <input type="text" className="form-control search-input" onChange={this.searchChange} value={this.state.searchInput} placeholder="Search Keyword" aria-label="Waste lookup search keyword" />
-            </div>
-            {/* col for search input */}
-
-            <div className="col-1 col-sm-1 col-md-1 col-lg-1 col-xl-1">
-              <div tabIndex="0" className="search-button" onClick={this.setSearchResult} onKeyPress={this.searchByEnter}>
-                <FontAwesomeIcon icon="search" className="fa-flip-horizontal" />
-              </div>
-              {/* .search-button */}
-            </div>
-            {/* col for search button */}
-          </div>
-          {/* End of Search Section */}
-
+          <Header />
+          <Search
+            searchChange={this.searchChange}
+            searchInput={this.state.searchInput}
+            setSearchResult={this.setSearchResult}
+            searchByEnter={this.searchByEnter}
+          />
 
           <div className="waste-list-wrapper">
-            <WasteList items={this.state.searchResult} favList={this.state.favList} removeFromFavList={this.removeFromFavList} addToFavList={this.addToFavList} />
-            <p className="waste-list-result-number">{`${this.state.searchResult.length > 0 ? this.state.searchResult.length + ' results' : this.state.searchResult.length + ' result'} found`} </p>
+            <WasteList
+              items={this.state.searchResult}
+              favList={this.state.favList}
+              removeFromFavList={this.removeFromFavList}
+              addToFavList={this.addToFavList}
+            />
 
-            {
-              this.state.favList.length > 0
-              &&
-              <h3 className="title-fav mt-5">Favourites</h3>
-            }
-            <WasteList items={this.state.favList} favList={this.state.favList} removeFromFavList={this.removeFromFavList} addToFavList={this.addToFavList} />
+            <p className="waste-list-result-number">
+              {this.state.resultMessage}
+
+            </p>
+
+            {this.state.favList.length > 0 && <h3 className="title-fav mt-5">Favourites</h3>}
+
+            <WasteList
+              items={this.state.favList}
+              favList={this.state.favList}
+              removeFromFavList={this.removeFromFavList}
+              addToFavList={this.addToFavList}
+            />
           </div>
-          {/* .waste-list-wrapper */}
+
         </div>
-        {/* .container-fluid */}
       </div>
     );
   }
