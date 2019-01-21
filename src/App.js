@@ -5,7 +5,8 @@ import { faSearch, faStar } from '@fortawesome/free-solid-svg-icons';
 import WasteList from './components/WasteList';
 import Header from './components/Header';
 import Search from './components/Search';
-const LOOKUP_API_URL = 'https://secure.toronto.ca/cc_sr_v1/data/swm_waste_wizard_APR?limit=1000/';
+import Favourite from './components/Favourite';
+const LOOKUP_API_URL = 'https://secure.toronto.ca/cc_sr_v1/data/swm_waste_wizard_APR?limit=1000';
 
 library.add(faSearch, faStar)
 
@@ -83,7 +84,7 @@ class App extends Component {
     if (this.state.searchInput.length > 0) {
       const query = this.state.searchInput.toLowerCase().split(' ');
       const result = [];
-
+      
       query.forEach(q => result.push(...this.state.lookupData.filter(data => data.keywords.includes(q))));
 
       return result;
@@ -177,20 +178,18 @@ class App extends Component {
 
             <p className="waste-list-result-number">
               {this.state.resultMessage}
-
             </p>
+          </div>
 
-            {this.state.favList.length > 0 && <h3 className="title-fav mt-5">Favourites</h3>}
-
-            <WasteList
-              items={this.state.favList}
+          {this.state.favList.length > 0 &&
+            <Favourite
               favList={this.state.favList}
               removeFromFavList={this.removeFromFavList}
               addToFavList={this.addToFavList}
             />
-          </div>
-
+          }
         </div>
+
       </div>
     );
   }

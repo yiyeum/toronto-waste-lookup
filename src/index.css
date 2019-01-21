@@ -63,8 +63,9 @@ table {
 
 .title-fav {
 	color: #23995C;
-	font-size: 1.4rem;
+	font-size: 1.6rem;
 	margin-bottom: 2%;
+	font-weight: bold;
 }
 
 p.waste-list-result-number {
@@ -103,9 +104,7 @@ p.waste-list-result-number {
 
 /* Waste List Component */
 .waste-list-wrapper {
-    background-color: #fbfbfb;
     padding: 3% 5%;
-    min-height: 50vh;
 }
 
 .waste-list {
@@ -123,4 +122,10 @@ p.waste-list-result-number {
 .waste-list-fav-icon-filled {
 	color: #23995C;
 	cursor: pointer;
+}
+
+/* Favourite Component */
+.fav-list-wrapper {
+	background-color: #F6FFFA;
+	padding: 3% 5%;
 }
